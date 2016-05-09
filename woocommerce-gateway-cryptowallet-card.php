@@ -11,8 +11,8 @@ add_action( 'plugins_loaded', 'woocommerce_cryptowallet_card_init', 0 );
 
 function woocommerce_cryptowallet_card_init() {
 
-	if ( ! class_exists( 'WC_Payment_Gateway' ) ) { 
-		return; 
+	if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
+		return;
 	}
 
 	/**
@@ -29,7 +29,7 @@ function woocommerce_cryptowallet_card_init() {
 		/**
 		 * Constructor
 		 */
-		function __construct() { 
+		function __construct() {
 
 			$this->id 				= 'cryptowallet_card';
 			$this->method_title		= __('CryptoWallet Card', 'cryptowallet');
@@ -48,16 +48,16 @@ function woocommerce_cryptowallet_card_init() {
 			$this->api_key		    = $this->settings['api_key'];
 			$this->uid		    		= $this->settings['uid'];
 			$this->testmode			  = $this->settings['testmode'];
-		
+
 			// SSL check hook used on admin options to determine if SSL is enabled
 			add_action( 'admin_notices', array( &$this, 'ssl_check' ) );
 
 			// Save admin options
-      if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '>=' ) ) {
-            	add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this, 'process_admin_options' ) );
-          	} else {
-             	add_action( 'woocommerce_update_options_payment_gateways', array( &$this, 'process_admin_options' ) );
-      }
+			if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '>=' ) ) {
+				add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this, 'process_admin_options' ) );
+			} else {
+				add_action( 'woocommerce_update_options_payment_gateways', array( &$this, 'process_admin_options' ) );
+			}
 
 			add_action('woocommerce_receipt_cryptowallet_card', array(&$this, 'receipt_page'));
 			add_action('woocommerce_thankyou_cryptowallet_card',array(&$this, 'thankyou_page'));
@@ -66,7 +66,7 @@ function woocommerce_cryptowallet_card_init() {
 		/**
 		 * Check if SSL is enabled and notify the user if SSL is not enabled
 		 */
-	 	function ssl_check() {
+		function ssl_check() {
 
 			if ( get_option( 'woocommerce_force_ssl_checkout' ) == 'no' && $this->enabled == 'yes' ) {
 				echo '<div class="error"><p>'.sprintf(__('CryptoWallet Card is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate', 'cryptowallet'), admin_url('admin.php?page=woocommerce')).'</p></div>';
@@ -80,52 +80,51 @@ function woocommerce_cryptowallet_card_init() {
 
 			$this->form_fields = array(
 				'title' => array(
-								'title' => __( 'Title', 'cryptowallet' ), 
-								'type' => 'text', 
-								'description' => __( 'This controls the title which the user sees during checkout.', 'cryptowallet' ), 
-								'default' => __( 'Credit Card / Debit Card', 'cryptowallet' )
-							), 
+					'title' => __( 'Title', 'cryptowallet' ),
+					'type' => 'text',
+					'description' => __( 'This controls the title which the user sees during checkout.', 'cryptowallet' ),
+					'default' => __( 'Credit Card / Debit Card', 'cryptowallet' )
+				),
 				'enabled' => array(
-								'title' => __( 'Enable/Disable', 'cryptowallet' ), 
-								'label' => __( 'Enable CryptoWallet Card', 'cryptowallet' ), 
-								'type' => 'checkbox', 
-								'description' => '', 
-								'default' => 'no'
-							), 
+					'title' => __( 'Enable/Disable', 'cryptowallet' ),
+					'label' => __( 'Enable CryptoWallet Card', 'cryptowallet' ),
+					'type' => 'checkbox',
+					'description' => '',
+					'default' => 'no'
+				),
 				'description' => array(
-								'title' => __( 'Description', 'cryptowallet' ), 
-								'type' => 'text', 
-								'description' => __( 'This controls the description which the user sees during checkout.', 'cryptowallet' ), 
-								'default' => 'Pay with your creditor deb it card.'
-							), 
+					'title' => __( 'Description', 'cryptowallet' ),
+					'type' => 'text',
+					'description' => __( 'This controls the description which the user sees during checkout.', 'cryptowallet' ),
+					'default' => 'Pay with your creditor deb it card.'
+				),
 				'api_key' => array(
-								'title' => __( 'API Key', 'cryptowallet' ), 
-								'type' => 'text', 
-								'description' => __( 'API Key provided by CryptoWallet.io', 'cryptowallet' ), 
-								'default' => ''
-							),
+					'title' => __( 'API Key', 'cryptowallet' ),
+					'type' => 'text',
+					'description' => __( 'API Key provided by CryptoWallet.io', 'cryptowallet' ),
+					'default' => ''
+				),
 				'uid' => array(
-								'title' => __( 'User ID', 'cryptowallet' ), 
-								'type' => 'text', 
-								'description' => __( 'User ID provided by CryptoWallet.io', 'cryptowallet' ), 
-								'default' => ''
-							)		,
-							
+					'title' => __( 'User ID', 'cryptowallet' ),
+					'type' => 'text',
+					'description' => __( 'User ID provided by CryptoWallet.io', 'cryptowallet' ),
+					'default' => ''
+				),
 				'testmode' => array(
-								'title' => __( 'Test Mode',  'cryptowallet' ), 
-								'label' => __( 'Enable Test Mode', 'cryptowallet' ), 
-								'type' => 'checkbox', 
-								'description' => __( 'Process transactions in Test Mode',  'cryptowallet' ), 
-								'default' => 'no'
-							),		
-				);
+					'title' => __( 'Test Mode',  'cryptowallet' ),
+					'label' => __( 'Enable Test Mode', 'cryptowallet' ),
+					'type' => 'checkbox',
+					'description' => __( 'Process transactions in Test Mode',  'cryptowallet' ),
+					'default' => 'no'
+				),
+			);
 		}
 
 		/**
 		 * Admin panel options
 		 */
 		function admin_options() {
-		
+
 			?>
 			<h3><?php _e( 'CryptoWallet Card', 'cryptowallet' ); ?></h3>
 			<p><?php _e( 'CryptoWallet Card works by adding credit card fields on the checkout and then sending the details to CryptoWallet Card for authorization.', 'cryptowallet' ); ?></p>
@@ -143,7 +142,7 @@ function woocommerce_cryptowallet_card_init() {
 			if ($this->enabled=="yes") {
 
 				if (get_option( 'woocommerce_force_ssl_checkout' ) == 'no' ) {
-				//	return false;
+					//	return false;
 				}
 				return true;
 			} else {
@@ -169,39 +168,44 @@ function woocommerce_cryptowallet_card_init() {
 
 			<fieldset>
 				<p class="form-row form-row-first">
+					<label for="cryptowallet_card_card_owner_title><?php echo __( 'Card Holder Title', 'woocommerce' ) ?> <span class="required" style="display: inline;">*</span></label>
+					<input type="text" class="input-text" name="cryptowallet_card_card_owner_title" />
+				</p>
+
+				<p class="form-row form-row-first">
 					<label for="cryptowallet_card_card_owner"><?php echo __( 'Card Holder', 'woocommerce' ) ?> <span class="required" style="display: inline;">*</span></label>
 					<input type="text" class="input-text" name="cryptowallet_card_card_owner" />
 				</p>
 				<p class="form-row form-row-first">
 					<label for="cryptowallet_card_card_number"><?php echo __( 'Credit Card number', 'woocommerce' ) ?> <span class="required" style="display: inline;">*</span></label>
 					<input type="text" onkeypress="return isNumberKey(event)" onkeyup="cardlogo(this.value)"  class="input-text" name="cryptowallet_card_card_number" maxlength="19"/>
-				  <span id="card_icon"></span>
+					<span id="card_icon"></span>
 					<span id="card_error"></span>
 				</p>
-				
+
 				<div class="clear"></div>
 				<p>
 					<label for="cc-expire-month"><?php echo __( 'Expiration date', 'woocommerce' ) ?> <span class="required" style="display: inline;">*</span></label>
 					<select name="cryptowallet_card_card_expiration_month" id="cc-expire-month">
 						<option value=""><?php _e( 'Month', 'woocommerce' ) ?></option>
 						<?php
-							$months = array();
-							for ( $i = 1; $i <= 12; $i++ ) {
-								$timestamp = mktime( 0, 0, 0, $i, 1 );
-								$months[ date( 'm', $timestamp ) ] = date( 'F', $timestamp );
-							}
-							foreach ( $months as $num => $name ) {
-								printf( '<option value="%s">%s</option>', $num, $name );
-							}
+						$months = array();
+						for ( $i = 1; $i <= 12; $i++ ) {
+							$timestamp = mktime( 0, 0, 0, $i, 1 );
+							$months[ date( 'm', $timestamp ) ] = date( 'F', $timestamp );
+						}
+						foreach ( $months as $num => $name ) {
+							printf( '<option value="%s">%s</option>', $num, $name );
+						}
 						?>
 					</select>
 					<select name="cryptowallet_card_card_expiration_year" id="cc-expire-year">
 						<option value=""><?php _e( 'Year', 'woocommerce' ) ?></option>
 						<?php
-							$years = array();
-							for ( $i = date( 'Y' ); $i <= date( 'Y' ) + 15; $i++ ) {
-								printf( '<option value="%u">%u</option>', $i, $i );
-							}
+						$years = array();
+						for ( $i = date( 'Y' ); $i <= date( 'Y' ) + 15; $i++ ) {
+							printf( '<option value="%u">%u</option>', $i, $i );
+						}
 						?>
 					</select>
 				</p>
@@ -214,88 +218,88 @@ function woocommerce_cryptowallet_card_init() {
 				<div class="clear"></div>
 				<input type="hidden" name="cryptowallet_card_card_type" id="card_type" />
 			</fieldset>
-			 <script type="text/javascript"> 
-				 function isNumberKey(evt)
-				 {
-   			 		var charCode = (evt.which) ? evt.which : event.keyCode
-   					if (charCode > 31 && (charCode < 48 || charCode > 57))
-                return false;
+			<script type="text/javascript">
+				function isNumberKey(evt)
+				{
+					var charCode = (evt.which) ? evt.which : event.keyCode
+					if (charCode > 31 && (charCode < 48 || charCode > 57))
+						return false;
 
-   					return true;
-          }
-			 </script>
-       <script type="text/javascript">
-			     function cardlogo(number)
-					 {
-					     
+					return true;
+				}
+			</script>
+			<script type="text/javascript">
+				function cardlogo(number)
+				{
 
-					     var cardtype = GetCardType(number);
 
-							 if( cardtype == "0")
-							 {
-							    jQuery("#notsup").html();
-									try { jQuery("#card_icon").removeClass('cc_icon_'+cardtype); } catch(e) { }
-									try { jQuery("#card_error").html('Card not supported'); } catch(e) { }
-								  jQuery("#card_type").val("");
-						
-							 }
-							 else {
-							       try { jQuery("#card_icon").addClass('cc_icon_'+cardtype); } catch(e) { }
-										 jQuery("#card_type").val(cardtype);
-							 }
-					 }
-					 
-					 
-           function GetCardType(number)
-           {
-    			 				// visa
-    							var re = new RegExp("^4");
-    							if (number.match(re) != null)
-                     return "visa";
+					var cardtype = GetCardType(number);
 
-    							// Mastercard
-    							re = new RegExp("^5[1-5]");
-    							if (number.match(re) != null)
-        					   return "mc";
+					if( cardtype == "0")
+					{
+						jQuery("#notsup").html();
+						try { jQuery("#card_icon").removeClass('cc_icon_'+cardtype); } catch(e) { }
+						try { jQuery("#card_error").html('Card not supported'); } catch(e) { }
+						jQuery("#card_type").val("");
 
-    							// AMEX
-    							re = new RegExp("^3[47]");
-    							if (number.match(re) != null)
-        					   return "amex";
+					}
+					else {
+						try { jQuery("#card_icon").addClass('cc_icon_'+cardtype); } catch(e) { }
+						jQuery("#card_type").val(cardtype);
+					}
+				}
 
-    							// Discover
-    							re = new RegExp("^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)");
-    							if (number.match(re) != null)
-                     return "discover";
 
-    							// Diners
-    							re = new RegExp("^36");
-    							if (number.match(re) != null)
-        						 return "diners";
+				function GetCardType(number)
+				{
+					// visa
+					var re = new RegExp("^4");
+					if (number.match(re) != null)
+						return "visa";
 
-    							// Diners - Carte Blanche
-    							re = new RegExp("^30[0-5]");
-    							if (number.match(re) != null)
-        						 return "diners";
+					// Mastercard
+					re = new RegExp("^5[1-5]");
+					if (number.match(re) != null)
+						return "mc";
 
-    							// JCB
-    							re = new RegExp("^35(2[89]|[3-8][0-9])");
-    							if (number.match(re) != null)
-        					    return "jcb";
+					// AMEX
+					re = new RegExp("^3[47]");
+					if (number.match(re) != null)
+						return "amex";
 
-    							// Visa Electron
-    							re = new RegExp("^(4026|417500|4508|4844|491(3|7))");
-    							if (number.match(re) != null)
-        						 return "visa";
+					// Discover
+					re = new RegExp("^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)");
+					if (number.match(re) != null)
+						return "discover";
 
-                  return "0";
-             }
-      </script>
+					// Diners
+					re = new RegExp("^36");
+					if (number.match(re) != null)
+						return "diners";
+
+					// Diners - Carte Blanche
+					re = new RegExp("^30[0-5]");
+					if (number.match(re) != null)
+						return "diners";
+
+					// JCB
+					re = new RegExp("^35(2[89]|[3-8][0-9])");
+					if (number.match(re) != null)
+						return "jcb";
+
+					// Visa Electron
+					re = new RegExp("^(4026|417500|4508|4844|491(3|7))");
+					if (number.match(re) != null)
+						return "visa";
+
+					return "0";
+				}
+			</script>
 			<style>
-			 .cc_icon_diners { background: url( <?php echo plugins_url('assets/diners.jpg',__FILE__);?>); width:36px; height: 24px  }
-			 .cc_icon_visa { background: url( <?php echo plugins_url('assets/visa.svg', __FILE__ );?>); width:36px; height: 24px  }
-			 .cc_icon_mc { background: url( <?php echo plugins_url('assets/mc.svg' , __FILE__ );?>); width:36px; height: 24px  }
-			 .cc_icon_amex{ background: url( <?php echo plugins_url('assets/amex.svg', __FILE__);?>); width:36px; height: 24px  }
+				.cc_icon_diners { background: url( <?php echo plugins_url('assets/diners.jpg',__FILE__);?>); width:36px; height: 24px  }
+				.cc_icon_visa { background: url( <?php echo plugins_url('assets/visa.svg', __FILE__ );?>); width:36px; height: 24px  }
+				.cc_icon_mc { background: url( <?php echo plugins_url('assets/mc.svg' , __FILE__ );?>); width:36px; height: 24px  }
+				.cc_icon_amex{ background: url( <?php echo plugins_url('assets/amex.svg', __FILE__);?>); width:36px; height: 24px  }
 			</style>
 			<?php
 		}
@@ -305,15 +309,17 @@ function woocommerce_cryptowallet_card_init() {
 		 */
 		function process_payment( $order_id ) {
 
-	
+
 			$order = new WC_Order( $order_id );
 
-			$card_number			= isset( $_POST['cryptowallet_card_card_number'] ) ? $_POST['cryptowallet_card_card_number'] : '';
-			$card_csc					= isset( $_POST['cryptowallet_card_card_csc'] ) ? $_POST['cryptowallet_card_card_csc'] : '';
+			$card_number		= isset( $_POST['cryptowallet_card_card_number'] ) ? $_POST['cryptowallet_card_card_number'] : '';
+			$card_csc			= isset( $_POST['cryptowallet_card_card_csc'] ) ? $_POST['cryptowallet_card_card_csc'] : '';
 			$card_exp_month		= isset( $_POST['cryptowallet_card_card_expiration_month'] ) ? $_POST['cryptowallet_card_card_expiration_month'] : '';
 			$card_exp_year		= isset( $_POST['cryptowallet_card_card_expiration_year'] ) ? $_POST['cryptowallet_card_card_expiration_year'] : '';
-			$card_type				= isset( $_POST['cryptowallet_card_card_type'] ) ? $_POST['cryptowallet_card_card_type'] : '';
-			$card_owner				= isset( $_POST['cryptowallet_card_card_owner'] ) ? $_POST['cryptowallet_card_card_owner'] : '';
+			$card_type			= isset( $_POST['cryptowallet_card_card_type'] ) ? $_POST['cryptowallet_card_card_type'] : '';
+			$card_owner			= isset( $_POST['cryptowallet_card_card_owner'] ) ? $_POST['cryptowallet_card_card_owner'] : '';
+			$card_owner_title	= isset( $_POST['cryptowallet_card_card_owner_title'] ) ? $_POST['cryptowallet_card_card_owner_title'] : '';
+
 			// Format credit card number
 			$card_number = str_replace( array( ' ', '-' ), '', $card_number );
 
@@ -325,89 +331,94 @@ function woocommerce_cryptowallet_card_init() {
 				return false;
 			}
 
-			$url = 'https://cryptowallet.io/api/v1/card/charge/'.$this->uid;		
-			
+			$url = 'https://cryptowallet.io/api/v1/card/charge/'.$this->uid;
+
 			list( $st1, $st2 )  = split(" ",$order->billing_address_1);
 			$st2						   .= $order->billing_address_2;
-			
-			$payload = array( 'addresses' => array ( 'billing' => array ( 'name_number'  => $st1 ,
-							 	 											 			 	 					 						'first_line'	 => $st2 ,
-																																		'town_city'		 => $order->billing_city,
-																																		'state_county' => $order->billing_state ,
-																																		'post_zip'		 => $order->billing_postcode , 
-																																		'country'			 => $order->billing_country   )  ) , 
-																							 
-																							 'card'		  => array ('long_num'    => $card_number	,
-																							 							 			 	'exp_date'    => $card_exp_month	.'/'.$card_exp_year,
-																																		'ccv'			    => $card_csc	,
-																																		'card_holder' => $card_owner , 
-																																		'type'				=> $card_type,
-																																		) , 
-																																		
-																																		
-																							  'customer' => array( 'email'     => $order->billing_email ,
-																													 					 'firstname' => $order->billing_first_name , 
-																																		 'lastname'	 => $order->billing_last_name
-																																		 ) ,
-																																		
-																								
-																								'transaction' => array( 'amount' => $order->order_total )
-																							 
-			 				 	 							
-																			 
-								 );
-								 
-			
-			$header = array( 'X-Authorization: '.$this->api_key , 'Content-Type: application/json'  );
-			
-			if( $this->testmode ) 
-			   $header[] = 'ENV: test';
-				 			
-							
-		 	 	$ch = curl_init();
-		 		curl_setopt($ch, CURLOPT_URL,$url);
-		 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header );
-		 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-		 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-				curl_setopt($ch, CURLOPT_POST, 1);
-				curl_setopt($ch, CURLOPT_FRESH_CONNECT, true );
-				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true );
 
-				curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
-				curl_setopt($ch, CURLOPT_POSTFIELDS,  json_encode($payload));
+			$payload = [
+				'addresses' => [
+					'billing' => [
+						'name_number'	=> $st1 ,
+						'first_line'	=> $st2 ,
+						'town_city'		=> $order->billing_city,
+						'state_county'	=> $order->billing_state ,
+						'post_zip'		=> $order->billing_postcode,
+						'country'		=> $order->billing_country
+					]
+				],
+				'card'		  		=> [
+					'title'			=> $card_owner_title,
+					'card_holder' 	=> $card_owner,
+					'long_num'   	=> $card_number,
+					'exp_month' 	=> $card_exp_month,
+					'exp_year'		=> $card_exp_year,
+					'ccv'			=> $card_csc,
+					'type'			=> $card_type
+				],
+				'customer' => [
+					'email'     => $order->billing_email ,
+					'firstname' => $order->billing_first_name ,
+					'lastname'	=> $order->billing_last_name
+				],
 
-	 			$response = curl_exec ($ch);						 
-				
-				//print_r(curl_getinfo($ch));
-				
-				curl_close($ch);
-				//print $response;
-				
-			  $json   = json_decode($response,1);
-				//print_r($payload); print_r($json);
+				'transaction' => [
+					'amount' => $order->order_total
+				]
+			];
 
-				//The first element of the retrn array ($arrResults[0]) is the Result. 0=Successful, 1=Warning (A result of 1 is returned either when the fraud module is providing a flag or if unnecessary parameters were sent to the API in the request message).
-		  if ( $json['code'] == 200 )
-				{			
-				  $order->add_order_note( __( 'CryptoWallet_Card payment completed', 'cryptowallet' )  );
-			  	$order->payment_complete();
-					WC()->cart->empty_cart();
-			
-					//redirect to the woocommerce thank you page
-				return array(
-					   'result' => 'success',
-						 'redirect' => add_query_arg( 'key', $order->order_key, add_query_arg( 'order', $order_id, get_permalink( get_option( 'woocommerce_thanks_page_id' ) ) ) )
-				);	
-					
-			}		
-				else{
-				    if(!$json['message'])
-						  $json['message'] = __('Gateway Error' , 'cryptowaller');
-						wc_add_notice( $json['message']  , 'error' );					
+
+			$header = [
+				'X-Authorization: '.$this->api_key , 'Content-Type: application/json'
+			];
+
+			if( $this->testmode ) {
+				$header[] = 'ENV: test';
 			}
-					
-		
-			return;
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL,$url);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $header );
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_FRESH_CONNECT, true );
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true );
+			curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
+			curl_setopt($ch, CURLOPT_POSTFIELDS,  json_encode($payload));
+
+			$response = curl_exec ($ch);
+
+			//print_r(curl_getinfo($ch));
+
+			curl_close($ch);
+			//print $response;
+
+			$json   = json_decode($response,1);
+			//print_r($payload); print_r($json);
+
+			//The first element of the retrn array ($arrResults[0]) is the Result. 0=Successful, 1=Warning (A result of 1 is returned either when the fraud module is providing a flag or if unnecessary parameters were sent to the API in the request message).
+			if ( $json['code'] == 200 )
+			{
+				$order->add_order_note( __( 'CryptoWallet_Card payment completed', 'cryptowallet' )  );
+				$order->payment_complete();
+				WC()->cart->empty_cart();
+
+				//redirect to the woocommerce thank you page
+				return array(
+					'result' => 'success',
+					'redirect' => add_query_arg( 'key', $order->order_key, add_query_arg( 'order', $order_id, get_permalink( get_option( 'woocommerce_thanks_page_id' ) ) ) )
+				);
+
+			}
+			else {
+				if(!$json['message']){
+					$json['message'] = __('Gateway Error' , 'cryptowaller');
+				}
+				wc_add_notice( $json['message']  , 'error' );
+			}
+
+			return true;
 		}
 
 		/**
@@ -422,12 +433,12 @@ function woocommerce_cryptowallet_card_init() {
 			$card_type				= isset( $_POST['cryptowallet_card_card_type'] ) ? $_POST['cryptowallet_card_card_type'] : '';
 			$card_owner				= isset( $_POST['cryptowallet_card_card_owner'] ) ? $_POST['cryptowallet_card_card_owner'] : '';
 
-			
+
 			if (  strlen( $card_owner ) < 3 ) {
 				wc_add_notice(__( 'Card Holder is required', 'cryptowallet' ) );
 				return false;
 			}
-			
+
 			// Determine if provided card security code contains numbers and is the proper length
 			if ( ! ctype_digit( $card_csc ) ) {
 				wc_add_notice(__( 'Card security code is invalid (only digits are allowed)', 'cryptowallet' ) );
@@ -440,7 +451,7 @@ function woocommerce_cryptowallet_card_init() {
 			}
 
 			// Check card expiration date
-			if ( ! ctype_digit( $card_exp_month ) || 
+			if ( ! ctype_digit( $card_exp_month ) ||
 				! ctype_digit( $card_exp_year ) ||
 				$card_exp_month > 12 ||
 				$card_exp_month < 1 ||
@@ -471,7 +482,7 @@ function woocommerce_cryptowallet_card_init() {
 				return false;
 			}
 
-			return true; 
+			return true;
 		}
 	}
 
@@ -482,6 +493,5 @@ function woocommerce_cryptowallet_card_init() {
 		$methods[] = 'WC_Gateway_CryptoWallet_Card';
 		return $methods;
 	}
-
 	add_filter( 'woocommerce_payment_gateways', 'add_cryptowallet_card_gateway' );
-} 
+}
